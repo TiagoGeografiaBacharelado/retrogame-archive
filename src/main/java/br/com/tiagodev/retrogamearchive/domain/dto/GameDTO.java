@@ -8,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class GameDTO {
-    private Long id;                 
+    private Long id;
     private String name;
     private Integer releaseYear;
     private String description;
