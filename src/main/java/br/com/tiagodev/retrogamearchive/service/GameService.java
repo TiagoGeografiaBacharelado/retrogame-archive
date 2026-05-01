@@ -2,6 +2,7 @@ package br.com.tiagodev.retrogamearchive.service;
 
 import br.com.tiagodev.retrogamearchive.domain.dto.GameDTO;
 import br.com.tiagodev.retrogamearchive.domain.model.Game;
+import br.com.tiagodev.retrogamearchive.exception.ResourceNotFoundException;
 import br.com.tiagodev.retrogamearchive.repository.GameRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -40,7 +41,7 @@ public class GameService {
     public GameDTO getGameById(Long id) {
         Game game = gameRepository.findById(id)
                 .orElseThrow(() ->
-                                new RuntimeException("Game not found with id: " + id)
+                        new ResourceNotFoundException("Game not found with id: " + id)
                 );
         return toDTO(game);
     }
@@ -51,7 +52,7 @@ public class GameService {
     public GameDTO updateGame(Long id, GameDTO dto) {
         Game existing = gameRepository.findById(id)
                 .orElseThrow(() ->
-                        new RuntimeException("Game not found with id: " + id)
+                        new ResourceNotFoundException("Game not found with id: " + id)
                 );
 
         // atualiza só os campos que vieram no DTO
@@ -69,7 +70,7 @@ public class GameService {
     // -------------------------
     public void deleteGame(Long id) {
         if (!gameRepository.existsById(id)) {
-            throw new RuntimeException("Game not found with id: " + id);
+            throw new ResourceNotFoundException("Game not found with id: " + id);
         }
         gameRepository.deleteById(id);
     }
