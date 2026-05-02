@@ -2,6 +2,7 @@ package br.com.tiagodev.retrogamearchive.controller;
 
 import br.com.tiagodev.retrogamearchive.domain.dto.GameDTO;
 import br.com.tiagodev.retrogamearchive.service.GameService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,7 @@ public class GameController {
     private final GameService gameService;
 
     @PostMapping
-    public ResponseEntity<GameDTO> createGame(@RequestBody GameDTO gameDTO) {
+    public ResponseEntity<GameDTO> createGame(@Valid @RequestBody GameDTO gameDTO) {
         GameDTO saved = gameService.createGame(gameDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
@@ -35,7 +36,7 @@ public class GameController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<GameDTO> updateGame(@PathVariable Long id, @RequestBody GameDTO gameDTO) {
+    public ResponseEntity<GameDTO> updateGame(@PathVariable Long id, @Valid @RequestBody GameDTO gameDTO) {
         GameDTO updated = gameService.updateGame(id, gameDTO);
         return ResponseEntity.ok(updated);
     }
