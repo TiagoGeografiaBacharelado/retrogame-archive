@@ -3,7 +3,10 @@ package br.com.tiagodev.retrogamearchive.service;
 import br.com.tiagodev.retrogamearchive.domain.dto.GameDTO;
 import br.com.tiagodev.retrogamearchive.domain.model.Game;
 import br.com.tiagodev.retrogamearchive.exception.ResourceNotFoundException;
+import br.com.tiagodev.retrogamearchive.repository.DeveloperRepository;
+import br.com.tiagodev.retrogamearchive.repository.FranchiseRepository;
 import br.com.tiagodev.retrogamearchive.repository.GameRepository;
+import br.com.tiagodev.retrogamearchive.repository.PublisherRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +18,9 @@ import java.util.stream.Collectors;
 public class GameService {
 
     private final GameRepository gameRepository;
+    private final DeveloperRepository developerRepository;
+    private final PublisherRepository publisherRepository;
+    private final FranchiseRepository franchiseRepository;
 
     // -------------------------
     // CREATE
@@ -78,17 +84,6 @@ public class GameService {
     // -------------------------
     // Conversores privados
     // -------------------------
-    private Game toEntity(GameDTO dto) {
-        return Game.builder()
-                .name(dto.getName())
-                .releaseYear(dto.getReleaseYear())
-                .description(dto.getDescription())
-                .numberOfPlayers(dto.getNumberOfPlayers())
-                // developer, publisher, franchise → mapear depois
-                // quando essas entidades estiverem prontas
-                .build();
-    }
-
     private GameDTO toDTO(Game game) {
         return GameDTO.builder()
                 .id(game.getId())
@@ -99,6 +94,33 @@ public class GameService {
                 .developerId(game.getDeveloper() != null ? game.getDeveloper().getId() : null)
                 .publisherId(game.getPublisher() != null ? game.getPublisher().getId() : null)
                 .franchiseId(game.getFranchise() != null ? game.getFranchise().getId() : null)
+                .build();
+    }
+
+    private Game toEntity(GameDTO dto) {
+        return Game.builder()
+                .name(dto.getName())
+                .releaseYear(dto.getReleaseYear())
+                .description(dto.getDescription())
+                .numberOfPlayers(dto.getNumberOfPlayers())
+                .developer(
+                        dto.getDeveloperId() != null
+                                ? developerRepository.findById(dto.getDeveloperId())
+                                .orElseThrow(() -> new ResourceNotFoundException("Developer not found with id: " + dto.getDeveloperId()))
+                                : null
+                )
+                .publisher(
+                        dto.getPublisherId() != null
+                                ? publisherRepository.findById(dto.getPublisherId())
+                                .orElseThrow(() -> new ResourceNotFoundException("Publisher not found with id: " + dto.getPublisherId()))
+                                : null
+                )
+                .franchise(
+                        dto.getFranchiseId() != null
+                                ? franchiseRepository.findById(dto.getFranchiseId())
+                                .orElseThrow(() -> new ResourceNotFoundException("Franchise not found with id: " + dto.getFranchiseId()))
+                                : null
+                )
                 .build();
     }
 }
