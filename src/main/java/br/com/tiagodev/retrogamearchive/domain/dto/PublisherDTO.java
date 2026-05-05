@@ -14,5 +14,5 @@ public class PublisherDTO {
 
     @NotBlank(message = "Name is required")
     private String name;
-    
+
 }
