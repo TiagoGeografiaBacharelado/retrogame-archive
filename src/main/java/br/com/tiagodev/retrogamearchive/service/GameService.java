@@ -8,6 +8,8 @@ import br.com.tiagodev.retrogamearchive.repository.FranchiseRepository;
 import br.com.tiagodev.retrogamearchive.repository.GameRepository;
 import br.com.tiagodev.retrogamearchive.repository.PublisherRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,11 +36,25 @@ public class GameService {
     // -------------------------
     // READ ALL
     // -------------------------
-    public List<GameDTO> getAllGames() {
-        return gameRepository.findAll()       // 1. busca todos do banco
-                .stream()                     // 2. transforma em stream
-                .map(this::toDTO)             // 3. converte cada Game → GameDTO
-                .collect(Collectors.toList()); // 4. coleta como List
+    public Page<GameDTO> getAllGames(String name, Integer releaseYear, Pageable pageable) {
+
+        if (name != null && releaseYear != null) {
+            return gameRepository.findByNameContainingIgnoreCaseAndReleaseYear(name, releaseYear, pageable)
+                    .map(this::toDTO);
+        }
+
+        if (name != null) {
+            return gameRepository.findByNameContainingIgnoreCase(name, pageable)
+                    .map(this::toDTO);
+        }
+
+        if (releaseYear != null) {
+            return gameRepository.findByReleaseYear(releaseYear, pageable)
+                    .map(this::toDTO);
+        }
+
+        return gameRepository.findAll(pageable)
+                .map(this::toDTO);
     }
 
     // -------------------------

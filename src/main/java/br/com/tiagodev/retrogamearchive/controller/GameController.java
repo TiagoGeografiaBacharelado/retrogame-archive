@@ -4,6 +4,9 @@ import br.com.tiagodev.retrogamearchive.domain.dto.GameDTO;
 import br.com.tiagodev.retrogamearchive.service.GameService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,8 +27,14 @@ public class GameController {
     }
 
     @GetMapping
-    public ResponseEntity<List<GameDTO>> getAllGames() {
-        List<GameDTO> games = gameService.getAllGames();
+    public ResponseEntity<Page<GameDTO>> getAllGames(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) Integer releaseYear,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<GameDTO> games = gameService.getAllGames(name, releaseYear, pageable);
         return ResponseEntity.ok(games);
     }
 
